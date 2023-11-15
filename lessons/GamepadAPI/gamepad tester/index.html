@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title>Gamepad controller</title>
+<meta charset='utf-8' />
+<meta name='viewport'
+      content='width=device-width, initial-scale=1.0, maximum-scale=5.0' />
+<link rel='stylesheet' href='styles.css' />
+<script src="index.js" defer></script>
+</head>
+<body>
+    <h1 class="center">Gamepad Tester</h1>
+    <div id="controller-not-connected-area" class="controller-status">
+        <div class="loader"></div>
+        <div>Геймпад не підключено. Натисніть будь-яку кнопку на ньому.</div>
+    </div>
+
+    <div id="controller-connected-area">
+        <div id="controller-connected" class="controller-status">Геймпад підключено</div>
+        <div id="rumble-on-button-press-area">
+            <input id="rumble-on-button-press" type="checkbox" />
+            <label for="rumble-on-button-press">Вібрація при натисненні</label>
+        </div>
+        <div id="buttons"></div>
+    </div>
+</body>
+</html>

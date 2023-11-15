@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title>index</title>
+<meta charset='utf-8' />
+<meta name='viewport'
+      content='width=device-width, initial-scale=1.0, maximum-scale=5.0' />
+<style>
+      #ball {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        background-color: red;
+        background-image: radial-gradient(circle at 40% 40%, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4));
+
+        position: relative;
+      }
+</style>
+</head>
+<body>
+    <p id="gamepad-info">Очікую на геймпад.</p>
+    <div id="ball"></div>
+<script>
+    const gamepadInfo = document.getElementById("gamepad-info");
+    const ball = document.getElementById("ball");
+    let start;
+    let leftP = 0;
+    let topP = 0;
+
+    function buttonPressed(b) {
+        if (typeof b === "object") {
+            return b.pressed;
+        }
+    }   
+
+    function gameLoop() {
+        const gamepads = navigator.getGamepads();
+        if (!gamepads) {
+            return;
+        }
+
+        const gp = gamepads[0];
+
+        let stickDeadZone = 0.1;
+        let leftRightValue = gp.axes[0];
+        let upDownValue = gp.axes[1];
+
+        if(leftRightValue >= stickDeadZone) {
+            leftP++;
+        } else if(leftRightValue <= -stickDeadZone) {
+            leftP--;
+        }
+
+        if(upDownValue >= stickDeadZone) {
+            topP++;
+        } else if(upDownValue <= -stickDeadZone) {
+            topP--;
+        }
+
+        if (buttonPressed(gp.buttons[12])) {
+            topP--;
+        } else if (buttonPressed(gp.buttons[13])) {
+            topP++;
+        }
+        if (buttonPressed(gp.buttons[15])) {
+            leftP++;
+        } else if (buttonPressed(gp.buttons[14])) {
+            leftP--;
+        }
+
+        ball.style.left = `${leftP * 2}px`;
+        ball.style.top = `${topP * 2}px`;
+
+        start = requestAnimationFrame(gameLoop);
+    }
+
+    window.addEventListener("gamepadconnected", (e) => {
+        const gp = navigator.getGamepads()[e.gamepad.index];
+        gamepadInfo.textContent = `Геймпад підключено з індексом ${gp.index}: ${gp.id}. 
+        Він має ${gp.buttons.length} кнопок та ${gp.axes.length} вісей.`;
+
+        gameLoop();
+    });
+
+    window.addEventListener("gamepaddisconnected", (e) => {
+        gamepadInfo.textContent = "Очікую на геймпад.";
+
+        cancelAnimationFrame(start);
+    });
+
+    let interval;
+
+    if (!("ongamepadconnected" in window)) {
+        interval = setInterval(pollGamepads, 500);
+    }
+
+    function pollGamepads() {
+    const gamepads = navigator.getGamepads();
+        for (const gp of gamepads) {
+            gamepadInfo.textContent = `Геймпад підключено з індексом ${gp.index}: ${gp.id}. 
+            Він має ${gp.buttons.length} кнопок та ${gp.axes.length} вісей.`;
+            gameLoop();
+            clearInterval(interval);
+        }
+    }
+
+    /*
+    window.addEventListener("gamepadconnected", (e) => {
+        console.log(
+            `Геймпад з індексом ${e.gamepad.index} підʼєднано,
+             id: ${e.gamepad.id},
+             ${e.gamepad.buttons.length} кнопок,
+             ${e.gamepad.axes.length} вісей (2 вісі на один джойстик)`
+        );
+    });
+    
+
+    window.addEventListener("gamepadconnected", (e) => {
+        const gamepad = navigator.getGamepads()[e.gamepad.index];
+        console.log(gamepad);
+    });
+
+    window.addEventListener("gamepaddisconnected", (e) => {
+        console.log(`Геймпад з індексом ${e.gamepad.index} відключено (${e.gamepad.id})`);
+    });
+    */
+</script>
+</body>
+</html>
